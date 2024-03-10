@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.cosmicreachfabric.cosmicreach.provider.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MainMenuMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
+

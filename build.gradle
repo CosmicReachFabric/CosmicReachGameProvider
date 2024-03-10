@@ -1,0 +1,83 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'eclipse'
+}
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+group = 'net.cosmicreachfabric.cosmicreach'
+archivesBaseName = 'CosmicReachGameProvider'
+version = '1.0.0'
+
+repositories {
+    maven {
+        url "https://maven.fabricmc.net/"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+    mavenCentral() {
+        content {
+            // Force ASM and ME to come from the fabric maven.
+            // This ensures that the version has been mirrored for use by the launcher/installer.
+            excludeGroupByRegex "org.ow2.asm"
+            excludeGroupByRegex "io.github.llamalad7"
+        }
+    }
+}
+
+dependencies {
+    compileOnly group: 'org.jetbrains', name: 'intellij-fernflower', version: fernflower_version
+    implementation group: 'net.fabricmc', name: 'fabric-loader', version: fabric_loader_version
+
+    api("net.fabricmc:sponge-mixin:${mixin_version}") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+    }
+    implementation 'com.google.guava:guava:21.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: gson_version
+    implementation group: 'org.ow2.asm', name: 'asm', version: asmVersion
+    implementation group: 'org.ow2.asm', name: 'asm-analysis', version: asmVersion
+    implementation group: 'org.ow2.asm', name: 'asm-commons', version: asmVersion
+    implementation group: 'org.ow2.asm', name: 'asm-tree', version: asmVersion
+    implementation group: 'org.ow2.asm', name: 'asm-util', version: asmVersion
+
+    //TODO Locally storing Cosmic Reach-0.1.0.jar here until I have time to implement https://github.com/Y2Kwastaken/CosmicTools
+    implementation fileTree(dir: 'libs', include: '*.jar')
+
+    api 'org.ow2.sat4j:org.ow2.sat4j.core:2.3.6'
+    api 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
+    api "net.fabricmc:tiny-remapper:0.10.1"
+    api "net.fabricmc:access-widener:2.1.0"
+    api ('net.fabricmc:mapping-io:0.5.0') {
+        // Mapping-io depends on ASM, dont bundle
+        transitive = false
+    }
+
+    api "io.github.llamalad7:mixinextras-fabric:$mixin_extras_version"
+
+    implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Unit testing for mod metadata
+    implementation('org.junit.jupiter:junit-jupiter:5.9.2')
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+                'Specification-Version': 8.0,
+                'Multi-Release': 'true'
+        )
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
